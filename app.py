@@ -103,9 +103,6 @@ def dashboard():
     return render_template("dashboard.html", user=current_user)
 
 
-# ... your existing imports ...
-
-
 @app.route("/deposit", methods=["GET", "POST"])
 @login_required
 def deposit():
@@ -185,9 +182,6 @@ def transfer():
         else:
             flash("Invalid transfer details!", "error")
     return render_template("dashboard.html", user=current_user)
-
-
-# ... rest of your code ...
 
 
 if __name__ == "__main__":
