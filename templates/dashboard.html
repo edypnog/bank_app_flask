@@ -1,0 +1,125 @@
+{% extends 'layout.html' %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bank App - Dashboard</title>
+
+
+</head>
+<body>
+    
+    {% block navbar %}
+    <a class="navbar-brand" href="{{ url_for('dashboard') }}">Bank App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endblock navbar %}
+        
+    
+    {% block content %}
+        <div class="container">
+            <h1 class="mt-5">Bank App Dashboard</h1>
+            <h2>Hello, {{ user.username }}!</h2>
+        
+            <h3 class="mt-4">Account Balance: ${{ user.balance }}</h3>
+        
+            <h3 class="mt-4">Deposit</h3>
+            <form method="POST" action="{{ url_for('deposit') }}">
+                <div class="input-group mb-3">
+                    <input type="number" step="0.01" class="form-control" name="amount" required>
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">Deposit</button>
+                    </div>
+                </div>
+            </form>
+        
+            <h3 class="mt-4">Withdraw</h3>
+            <form method="POST" action="{{ url_for('withdraw') }}">
+                <div class="input-group mb-3">
+                    <input type="number" step="0.01" class="form-control" name="amount" required>
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">Withdraw</button>
+                    </div>
+                </div>
+            </form>
+        
+            <h3 class="mt-4">Transfer</h3>
+            <form method="POST" action="{{ url_for('transfer') }}">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="recipient_username" placeholder="Recipient Username" required>
+                    <input type="number" step="0.01" class="form-control" name="amount" required>
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">Transfer</button>
+                    </div>
+                </div>
+            </form>
+            
+            
+                
+        
+            <div class="mt-4">
+                {% for message in get_flashed_messages() %}
+                    <div class="alert alert-{{ 'success' if message.category == 'success' else 'danger' }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+    {% endblock %}
+
+    {% block transaction_history %}
+        <h3>Transaction History</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Transaction Type</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in current_user.transactions %}
+                        <tr>
+                            <td>{{ transaction.timestamp }}</td>
+                            <td>
+                                
+                                {% if "deposit" in transaction.transaction_type %}
+                                    <span class="text-success">{{ transaction.transaction_type }}</span>
+                                {% elif "withdrawal" %}
+                                <span class="text-danger">{{ transaction.transaction_type }}</span>
+                                {% else %}
+                                    {{ transaction.transaction_type }}
+                                {% endif %}
+                            </td>
+                            <td>${{ transaction.amount }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endblock %}
+        
+    
+</body>
+</html>
